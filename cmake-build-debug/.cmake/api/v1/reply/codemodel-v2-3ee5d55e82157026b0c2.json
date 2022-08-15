@@ -1,0 +1,96 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "EHL",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "build_grid_based_hub_labelling::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-build_grid_based_hub_labelling-Debug-a8f407d9635c302012f9.json",
+					"name" : "build_grid_based_hub_labelling",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "build_visibility_graph::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-build_visibility_graph-Debug-fe5945c67a8c37173c69.json",
+					"name" : "build_visibility_graph",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "construct_hl::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-construct_hl-Debug-193f5d7b2267e441f7d6.json",
+					"name" : "construct_hl",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "hub_label_converter::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-hub_label_converter-Debug-3cb6bb39d06c60f5aa31.json",
+					"name" : "hub_label_converter",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "testEHL::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-testEHL-Debug-f37a3b6a6f791dd96c1e.json",
+					"name" : "testEHL",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/jcdu3/Desktop/Research/EHL/cmake-build-debug",
+		"source" : "/Users/jcdu3/Desktop/Research/EHL"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}
