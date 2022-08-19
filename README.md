@@ -4,7 +4,7 @@
 
 Implementation of Euclidean Hub Labeling (EHL). EHL is an ultrafast optimal path finding algorithm used for finding shortest paths in Euclidean space.
 EHL utilises visibility graph and extends hub labeling[1] to build the index used for online pathfinding. The algorithm and details of our implementation of EHL is available in our paper. EHL is licensed under MIT license, which the license is kept anonymous for this submission.
-n.
+
 
 ## Dataset
 
@@ -50,7 +50,7 @@ Run "make fast" to compile.
 Currently, we provide three bash scripts to quickly reproduce the experimental results reported in our paper.
 
 bash preprocessing_EHL.sh [BENCHMARK_SUITE] 
-e.g., run "bash preprocessing.sh dao" This bash command creates all the indexes (visibility graph, hub label and EHL) needed for EHL for all the maps in the benchmark suite (dao).
+e.g., run "bash preprocessing_EHL.sh dao" This bash command creates all the indexes (visibility graph, hub label and EHL) needed for EHL for all the maps in the benchmark suite (dao).
 
 bash benchmark_EHL.sh [BENCHMARK_SUITE] 
 e.g., run "bash benchmark_EHL.sh dao" This bash command runs queries for EHL for all the maps in the benchmark suite (dao) using the queries taken from MovingAI.
@@ -67,7 +67,16 @@ Our main contribution of EHL is in the following files:
 - ebhl.h
 - ebhl_query_v2.h
 
-In our paper, we have two phases 
+In our paper, we have two phases:
+1. Offline Preprocessing
+- construction of visibility graph is in "build_visibility_graph.cpp"
+- construction of hub label is in "construct_hl.cpp"
+- implementation and construction of EHL is in "build_grid_based_hub_labelling.cpp"
+We have provided a bash file "preprocessing_EHL.sh" as explained in the previous section which can preprocess all of the above for a given benchmark.
+
+2. Online Query Processing
+- running EHL query is in "test_EHL.cpp"
+We have provided a bash file "benchmark_EHL.sh" which can run all queries given in the scenario file for a given benchmark.
 
 ## References
 [1]Li, Y.; U, L. H.; Yiu, M. L.; and Kou, N. M. 2017. An Experimental Study on Hub Labeling based Shortest Path Algorithms. Proceedings of the VLDB Endowment, 11(4): 445–457.
