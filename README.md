@@ -10,35 +10,14 @@ EHL utilises visibility graph and extends hub labeling[1] to build the index use
 
 The four benchmarks used by EHL (dao, da2, sc1, and bgmaps) are retrieved from MovingAI (https://movingai.com).
 The merged-meshes are provided by the authors of Polyanya [2] and available from repository (https://bitbucket.org/%7B3c286763-d509-45c2-b036-75814ce8955f%7D/)
-
+We have also provided the scenarios used for testing and experiments in the dataset to reproduce our results.
 ## Requirements
 The following libraries need to be installed in order to reproduce the implementation results.
+For installation, please follow the guidelines provided by the link.
 
-- CMake: 
-
-For ubuntu users:
-```shell script
-sudo apt-get install cmake
-```
-
-For mac users:
-```shell script
-brew install cmake
-```
-- OpenMP: please refer to (https://www.openmp.org) for installation guide
-
-- Google Sparsehash
-
-For ubuntu users:
-```shell script
-sudo apt-get install sparsehash
-```
-
-For mac users:
-```shell script
-brew install google-sparsehash
-```
-
+- CMake: https://cmake.org
+- OpenMP: https://www.openmp.org
+- Google Sparsehash: https://github.com/justinsb/google-sparsehash
 - Boost geometry - EHL uses boost geometry library to find and check visibility area as required in the algorithm. However, the latest version doesn't handle some precise cases and only version 1.64 is accurate to our precision needs. Boost version 1.64 can be downloaded from here (https://www.boost.org/users/history/version_1_64_0.html)
 
 ## Compiling and Running

@@ -8,18 +8,7 @@
  This implementation of Polyanya is licensed under MIT.
  Several source files from Daniel Harabor's Warthog project were used this project - these files are also licensed under MIT. These files are: helpers/cfg.cpp, helpers/cfg.h, helpers/cpool.h, helpers/timer.cpp and helpers/timer.h.
  */
-// cpool.h
-//
-// A pool of pre-allocated memory specialised for the construction of
-// single structs of a fixed size.
-// To achieve efficient re-allocation each pre-allocated
-// chunk of memory has associated with it a stack of memory offsets
-// which have been previously freed.
-// This introduces a 12.5% overhead to total memory consumption.
-//
-// @author: dharabor
-// @created: 23/08/2012
-//
+
 
 #include <cassert>
 #include <iostream>

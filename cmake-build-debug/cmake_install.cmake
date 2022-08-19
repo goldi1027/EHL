@@ -1,4 +1,4 @@
-# Install script for directory: /Users/jcdu3/Desktop/Research/EHL
+# Install script for directory: /Users/jcdu3/Desktop/EHL/EHL
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/jcdu3/Desktop/Research/EHL/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/jcdu3/Desktop/EHL/EHL/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

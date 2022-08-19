@@ -13,14 +13,6 @@
 #include <iostream>
 #include <map>
 
-// cfg.h
-//
-// A centralised place for dealing with configuration parameters.
-//
-// @author: dharabor
-// @created: 10/09/2012
-//
-
 namespace warthog
 {
 
