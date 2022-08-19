@@ -626,10 +626,15 @@ void build_ebhl_parallel(string dir, string map, int grid_size){
     delete ebhl;
 
 }
-
+/*
+ * Construct of EHL as detailed in Offline Preprocessing 3-5.
+ * Using pre-constructed visibility graph and hub labels, EHL is built.
+ *
+ */
 void build_ebhl(string dir, string map, int grid_size){
 
-    std::cout<<"Building ehbl ..."<< map << endl;
+    std::cout<<"Building EHL ..."<< map << endl;
+    //load mesh
     string mesh_path = "dataset/merged-mesh/" + dir + "/" + map + "-merged.mesh";
     ifstream meshfile(mesh_path);
     mp = new pl::Mesh(meshfile);
@@ -668,10 +673,6 @@ void build_ebhl(string dir, string map, int grid_size){
         }
         id ++;
     }
-    cout << turning_point.size() << endl;
-    cout << "Searching for triangles.... " << endl;
-    //find all the triangles for each convex point
-
 
     //EBHL construct grid label using vertices in the mesh vertices(all cordinates)
     auto ebhl = new pl::EBHL(grid_size,mp->get_map_height(),mp->get_map_width());
@@ -680,7 +681,7 @@ void build_ebhl(string dir, string map, int grid_size){
     lab.load_labels(p_label.c_str());
 
 
-
+    //loading hub label
     string order = "dataset/hub_label/" + dir + "/" + map + ".order";
     ifstream order_ifs(order.c_str());
     vector<NodeID> label_rank(numOfVertices);
@@ -692,9 +693,7 @@ void build_ebhl(string dir, string map, int grid_size){
         label_inv[i] = tv;
     }
 
-    //////////---------------------------------------------------------------------------------
-    //TODO:: change SHP to this filtered labels.
-    //filtering label here;
+    //Pruning 4: filtering dead-end label;
     vector<vector<raw_label>> r_label = lab.get_raw_label_list(label_inv);
     unsigned label_size  = 0;
     for(auto fl : r_label){
@@ -703,16 +702,13 @@ void build_ebhl(string dir, string map, int grid_size){
     std::cout<<"Before filtering label size: " << label_size <<std::endl;
 
     vector<vector<raw_label>> f_label;
-    // filter out non-taut symbol
     for(unsigned i = 0; i < r_label.size(); i ++){
         int current_vertex_id = turning_vertices[i];
         vector<raw_label> filtered_labels;
         for(unsigned j = 0 ; j < r_label[i].size(); j ++){
-
             int current_hub_id = turning_vertices[label_inv[r_label[i][j].hub_id]];
             int current_predecessor  = turning_vertices[r_label[i][j].label_predecessor];
             int current_first_node  = turning_vertices[r_label[i][j].label_first_node];
-
             if(current_hub_id == current_vertex_id){
                 filtered_labels.push_back(r_label[i][j]);
             }else{
@@ -742,14 +738,11 @@ void build_ebhl(string dir, string map, int grid_size){
         label_size += fl.size();
     }
     std::cout<<"After filtering label size: " << label_size <<std::endl;
-    //with input of map size(height and width) comes up with all combination of cordinates
-    //in future, we can modify it to specified grid size
-    //////////---------------------------------------------------------------------------------
 
     int map_height;
     int map_width;
-    //current default grid sizes to be 1
     mp->get_grid_width_height(map_width, map_height);
+    //superimpose uniform grid for the whole map given the map size
     ebhl->initialize_grid_map(grid_size, map_width, map_height);
 
     //find all the triangle successors and insert into a unique set for computation of polygon later
@@ -758,7 +751,7 @@ void build_ebhl(string dir, string map, int grid_size){
         thread_search[i] = new pl::visibleAreaSearchInstance(mp);
     }
     vector< pair <vis_poly , vis_poly>> boost_poly (turning_point.size());
-
+    //finding all the visible areas for the given map and pruning 1 is applied
     int progress = 0;
     {
         printf("Using %d threads\n", omp_get_max_threads());
@@ -772,6 +765,7 @@ void build_ebhl(string dir, string map, int grid_size){
             auto search = thread_search[thread_id];
             for(int source_node=node_begin; source_node < node_end; ++source_node) {
                 search->search_non_taut_visible_area(turning_vertices[source_node], turning_vertices_location[source_node],boost_poly[source_node].first.boost_poly,boost_poly[source_node].second.boost_poly);
+                //finds the two visible polygon for each convex vertex and stores it as two boost polygons
                 bg::envelope(boost_poly[source_node].first.boost_poly,  boost_poly[source_node].first.bounding_box);
                 bg::dsv( boost_poly[source_node].first.bounding_box);
                 bg::envelope(boost_poly[source_node].second.boost_poly,  boost_poly[source_node].second.bounding_box);
@@ -789,7 +783,7 @@ void build_ebhl(string dir, string map, int grid_size){
             }
         }
     }
-
+    //find the hub nodes and via labels for each grid
     progress = 0;
     {
         printf("Using %d threads\n", omp_get_max_threads());
@@ -801,7 +795,7 @@ void build_ebhl(string dir, string map, int grid_size){
             int node_begin = (node_count*thread_id) / thread_count ;
             int node_end = (node_count*(thread_id+1)) / thread_count ;
             for(int source_node=node_begin; source_node < node_end; ++source_node) {
-                // compute visible and partial visible vertices.
+                // compute visible and partial visible vertices for each grid.
                 vector<int> visible_vertices;
                 vector<int> partial_visible;
                 polygon_type grid;
@@ -813,7 +807,7 @@ void build_ebhl(string dir, string map, int grid_size){
 
                 const point_type& grid_min = grid.outer()[0];
                 const point_type& grid_max = grid.outer()[2];
-
+                //checks whether it is partially or fully visible for first visible polygon
                 for (unsigned j = 0; j <  boost_poly.size(); j++) {
                     bool already_added_vertex= false;
                     const point_type& min = boost_poly[j].first.bounding_box.min_corner();
@@ -860,7 +854,7 @@ void build_ebhl(string dir, string map, int grid_size){
 
                     const point_type& second_min = boost_poly[j].second.bounding_box.min_corner();
                     const point_type& second_max = boost_poly[j].second.bounding_box.max_corner();
-
+                    //checks whether its visible for second polygon
                     if(are_rectangles_overlap(second_min ,second_max,grid_min,grid_max)) {
                         if (polygon_within_grid(grid, boost_poly[j].second.boost_poly)) {
                             partial_visible.push_back(j);
@@ -902,7 +896,7 @@ void build_ebhl(string dir, string map, int grid_size){
                 // compute label
 
                 std::map<int, polyanya::Hub_label> label_mapper;
-
+                //organises and inserts visible via labels for each hub node
                 if(!visible_vertices.empty()){
                     for(unsigned j = 0 ; j < visible_vertices.size(); j ++){
                         const vector<raw_label>& label_list  = f_label[visible_vertices[j]];
@@ -919,7 +913,7 @@ void build_ebhl(string dir, string map, int grid_size){
                     }
                 }
 
-
+                //organises and inserts partially visible via labels for each hub node
                 if(!partial_visible.empty()){
                     for(unsigned j = 0 ; j < partial_visible.size(); j ++){
                         const vector<raw_label>& label_list  = f_label[partial_visible[j]];
@@ -944,7 +938,7 @@ void build_ebhl(string dir, string map, int grid_size){
                 {
                     ebhl->grid_labels[source_node].hub_labels.push_back(it->second);
                 }
-
+                //sort the labels based on hub node ID
                 std::sort(std::begin(ebhl->grid_labels[source_node].hub_labels),
                           std::end(ebhl->grid_labels[source_node].hub_labels),
                           []( const pl::Hub_label&  lvalue, const pl::Hub_label& rvalue) {
@@ -952,8 +946,7 @@ void build_ebhl(string dir, string map, int grid_size){
 
                 const pl::Point &  min_corner =  ebhl->grid_labels[source_node].a_p;
                 const pl::Point &  max_corner =  ebhl->grid_labels[source_node].c_p;
-
-                // distance pruning ------------------------------------------------;
+                //Pruning 2 and 3
                 for( unsigned j = 0;  j < ebhl->grid_labels[source_node].hub_labels.size(); j ++ ){
                     const pl::Hub_label hl = ebhl->grid_labels[source_node].hub_labels[j];
                     const vector< pl::Convex_vertices_label>& convex_label_list = hl.convex_labels;
@@ -993,7 +986,6 @@ void build_ebhl(string dir, string map, int grid_size){
                     ebhl->grid_labels[source_node].hub_labels[j].convex_labels = filtered_convex_label_list;
                     ebhl->grid_labels[source_node].hub_labels[j].convex_labels.shrink_to_fit();
                 }
-                // distance pruning ------------------------------------------------;
                 ebhl->grid_labels[source_node].hub_labels.erase(std::remove_if( ebhl->grid_labels[source_node].hub_labels.begin(), ebhl->grid_labels[source_node].hub_labels.end(),
                                                                       [](const pl::Hub_label& x) {
                                                                           return x.convex_labels.empty(); // put your condition here
@@ -1002,7 +994,7 @@ void build_ebhl(string dir, string map, int grid_size){
                 polyanya::Hub_label hub_label = polyanya::Hub_label{ (int)turning_point.size(), vector<pl::Convex_vertices_label>{cv}};
                 ebhl->grid_labels[source_node].hub_labels.push_back( hub_label );
 
-                // storing the lower bound;
+                //Optimisation: storing the lower bound;
                 for(unsigned j = 0; j <ebhl->grid_labels[source_node].hub_labels.size(); j ++){
                     double lower_bound = std::numeric_limits<double>::max();
                     if(ebhl->grid_labels[source_node].hub_labels[j].hub_id ==(int)turning_point.size() ){
@@ -1033,44 +1025,11 @@ void build_ebhl(string dir, string map, int grid_size){
 
     timer.stop();
     std::cout<<std::fixed << setprecision(8) <<"Preprocessing finished in "<< timer.elapsed_time_micro()/1000000 << " seconds"<< std::endl;
-    //preprocessing experiment
-    int total_hub = 0;
-    int total_convex_label = 0;
-    for(int i = 0; i < ebhl->grid_labels.size(); ++i){
-        for(int j = 0; j < ebhl->grid_labels[i].hub_labels.size(); ++j){
-            total_hub++;
-            total_convex_label += ebhl->grid_labels[i].hub_labels[j].convex_labels.size();
-        }
-    }
-    double poly_size = 0;
-    for ( auto bp : boost_poly){
-        poly_size += bp.first.boost_poly.outer().size() * (16);
-    }
-    std::cout<<std::fixed << setprecision(8) <<"visible polygon size in "<< poly_size << " bytes"<< std::endl;
-
-    unsigned long long hub_size = 0;
-
-    for(auto gl : ebhl->grid_labels){
-        for(auto label : gl.hub_labels){
-            hub_size += 4;
-            hub_size += label.convex_labels.size() * 17;
-        }
-    }
-
-
-    std::cout<<std::fixed << setprecision(8) <<"hub labelling size in "<< hub_size/(double)1000000 << " bytes"<< std::endl;
-    cout << setprecision(8) << "total hubs "<< total_hub << " convex labels " << total_convex_label << endl;
-//    string output_file = "dataset/ebhl/" + dir + "/" + map + ".nt_cormapper_"+ to_string(grid_size);
-//    ebhl->output_cordinate_mapper( output_file);
-
-    //save grid labels in it's original data structure in parallel
-//    string output_path = "dataset/ebhl/" + dir + "/" + map + ".nt_gridlabel_"+ to_string(grid_size);
-//    ebhl->save_grid_labels_parallel(output_path.c_str());
 
     //save in adjacent lists without parallelisation
     string output_path = "dataset/ehl/" + dir + "/" + map + ".nt_adj_"+ to_string(grid_size);
     ebhl->save_adjacent_list(output_path.c_str());
-
+    //store the visible polygons
     string output_triangle_file = "dataset/ehl/" + dir + "/" + map +".nt_triangles_"+ to_string(grid_size);
     int size_of_turning = turning_point.size();
     output_non_taut_triangle(boost_poly, size_of_turning,output_triangle_file);

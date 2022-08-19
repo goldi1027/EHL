@@ -60,6 +60,10 @@ namespace polyanya{
             hub_lower_bound.clear();
         };
 
+        /*
+         * Initialise EHL instance
+         * Superimpose grids with a given grid size for the entire map
+         */
         void initialize_grid_map(int grid_size, int map_width, int map_height) {
             int row = ceil((double) map_width / grid_size);
             int column = ceil((double) map_height / grid_size);

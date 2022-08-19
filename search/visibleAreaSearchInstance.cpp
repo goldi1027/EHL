@@ -380,7 +380,10 @@ namespace polyanya {
 
 
 
-
+    /*
+     * Search for visible area
+     * Pruning 1 is applied which splits the visible area into two non-taut regions
+     */
     bool visibleAreaSearchInstance::search_non_taut_visible_area(int s,PointLocation start_pl,polygon_type& poly1, polygon_type& poly2)
     {
 
