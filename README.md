@@ -37,6 +37,8 @@ e.g., run "bash benchmark_EHL.sh dao" This bash command runs queries for EHL for
 bash clean_index.sh [BENCHMARK_SUITE]
 e.g., run "bash clean_index.sh". This bash command deletes and cleans all indexes of EHL directories.
 
+## Contact
+Any questions regarding EHL please contact jinchun.du@monash.edu
 
 ## References
 [1] Ye Li, Leong Hou U, Man Lung Yiu, Ngai Meng Kou: An Experimental Study on Hub Labeling based Shortest Path Algorithms. Proc. VLDB Endow. 11(4): 445-457 (2017)
