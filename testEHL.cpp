@@ -172,6 +172,14 @@ void  benchmark_map(  string dir_name, string map_name, int grid_size){
 
    final_path_adjacent(dir_name, map_name, grid_size, p_time, p_distance, path_length);
 
+// The below code is to generate the output of all queries for each map with information of runtime, path length, and distance per query. As it is for a single map only, for an entire benchmark, merging these files is necessary.
+//    string query_output = "dataset/result/query/" + dir_name + "/final/" + to_string(grid_size) + "/" + map_name  +  ".csv";
+//    std::ofstream q_file(query_output);
+//    q_file<<"Map,Query Number,Time,Distance,Path Length\n";
+//    for (int i = 0; i < p_distance.size(); ++i) {
+//        q_file << std::fixed << setprecision(8) << map_name << "," << i << "," << p_time[i]/runtimes << "," << p_distance[i] << "," << path_length[i] <<"\n";
+//    }
+//    q_file.close();
 }
 
 
