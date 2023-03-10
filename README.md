@@ -32,7 +32,7 @@ bash preprocessing_EHL.sh [BENCHMARK_SUITE]
 e.g., run "bash preprocessing_EHL.sh dao" This bash command creates all the indexes (visibility graph, hub label and EHL) needed for EHL for all the maps in the benchmark suite (dao).
 
 bash benchmark_EHL.sh [BENCHMARK_SUITE] 
-e.g., run "bash benchmark_EHL.sh dao" This bash command runs queries for EHL for all the maps in the benchmark suite (dao) using the queries taken from MovingAI.
+e.g., run "bash benchmark_EHL.sh dao" This bash command runs queries for EHL for all the maps in the benchmark suite (dao) using the queries taken from MovingAI. The output shows the average runtime of an entire map's queries to the console. 
 
 bash clean_index.sh [BENCHMARK_SUITE]
 e.g., run "bash clean_index.sh". This bash command deletes and cleans all indexes of EHL directories.
