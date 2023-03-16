@@ -62,6 +62,7 @@ bool is_within_rectangle( const point_type& check_point, const point_type&  min,
 
 }
 
+//checks whether a polygon is within a grid
 bool polygon_within_grid(const polygon_type& poly1, const polygon_type& poly2){
     for(const auto& p : poly1.outer()){
         if(!is_within_rectangle(p,poly2.outer()[0],poly2.outer()[2] )){
@@ -368,7 +369,8 @@ void build_ebhl(string dir, string map, int grid_size){
                     const point_type& max = boost_poly[j].first.bounding_box.max_corner();
 
                     if(are_rectangles_overlap(min,max,grid_min,grid_max) ) {
-                        if (polygon_within_grid(grid, boost_poly[j].first.boost_poly)) {
+                        //Fixed parameters passed incorrectly
+                        if (polygon_within_grid(boost_poly[j].first.boost_poly,grid)) {
                             partial_visible.push_back(j);
                             already_added_vertex = true;
                         } else {
@@ -410,7 +412,8 @@ void build_ebhl(string dir, string map, int grid_size){
                     const point_type& second_max = boost_poly[j].second.bounding_box.max_corner();
                     //checks whether its visible for second polygon
                     if(are_rectangles_overlap(second_min ,second_max,grid_min,grid_max)) {
-                        if (polygon_within_grid(grid, boost_poly[j].second.boost_poly)) {
+                        //Fixed parameters passed incorrectly
+                        if (polygon_within_grid(boost_poly[j].second.boost_poly,grid)) {
                             partial_visible.push_back(j);
                         } else {
                             if (bg::intersects(grid, boost_poly[j].second.boost_poly)) {
@@ -608,9 +611,6 @@ int main(int argc, char*argv[]){
 
         //improved memory and preprocessing pruning version saving in adjacent lists
         build_ebhl(dir,map,stoi(grid_size));
-
-        //saving grid labels in parallel
-        //build_ebhl_parallel(dir,map,stoi(grid_size));
 
 
     }catch(exception&err){
